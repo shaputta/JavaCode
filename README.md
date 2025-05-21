@@ -1,2 +1,1 @@
 # JavaCode
-# Sample JavaCode

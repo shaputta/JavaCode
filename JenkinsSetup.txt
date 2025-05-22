@@ -1,0 +1,61 @@
+Overview:
+This document outlines the process of integrating OWASP Dependency Check with Jenkins. To successfully implement this setup, you will need a GitHub account with a hosted project and Jenkins installed on your local machine. The OWASP Dependency Check scan will be automatically initiated upon GitHub commit or merge requests, ensuring continuous security assessment of project dependencies.
+What is OWASP Dependency-Check?
+OWASP Dependency-Check is a tool that identifies project dependencies and checks if there are any known, publicly disclosed, vulnerabilities. It can be used in various software development contexts to enhance the security of applications by identifying and alerting developers about vulnerable components that may be included in their projects.
+Prerequisites:
+•	Jenkins
+•	Github Project: you should have a project Repository.
+Jenkins Installation:
+There are multiple ways available to install the Jenkins based on your Operating System. This guide provides detailed steps to install and configure Jenkins using the WAR (Web Application Archive) file. The Jenkins Web application Archive (WAR) file bundles Winstone, a Jetty servlet container wrapper, and can be started on any operating system or platform with a version of Java supported by Jenkins.
+The Jenkins Web application Archive (WAR) file can be started from the command line like this:
+1.	Download the latest Jenkins WAR file to an appropriate directory on your machine
+2.	Open a terminal/command prompt window to the download directory
+3.	Run the command java -jar jenkins.war --httpPort=9000 (Default is 8080)
+4.	Browse to http://localhost:9000 and wait until the Unlock Jenkins page appears
+5.	Continue with the post-installation setup wizard below
+Steps to Integrate OWASP Dependency-Check with Jenkins:
+Once the installation is complete, install the OWASP Dependency Check plugin in Jenkins as described below.
+•	In your Jenkins instance, go to the Jenkins dashboard.
+•	Click on “Manage Jenkins” in the left sidebar.
+•	Select “Plugins” and then go to Available Plugins
+•	Search for “OWASP Dependency-Check.”
+•	Check the box next to the plugin and click “Install”
+ 
+Configure Tool Configuration of dependency-check installation in Jenkins:
+You need to configure OWASP Dependency-Check tool in the global tool configuration.
+•	In Jenkins, go to “Manage Jenkins” > “Tools“
+•	Scroll down to the “OWASP Dependency-Check” section and “Add Dependency Check”
+Create or Configure a Freestyle Project Jenkins:
+•	Create a new Jenkins job or configure an existing one where you want to add OWASP Dependency-Check.
+ 
+•	In the job configuration, you will find Source Code Management in that Select Git after that enter the Repository URL.
+ 
+•	Add the Github credentials if the project is not public. Here in this case, the project is public.
+•	In the Triggers section, choose “GitHub hook trigger for GITScm polling” as the job should be triggered based on commit/merge request.
+ 
+•	In the Build steps configuration, first you will need to build the project. Here in this case, since we are using maven project, we need to select “Invoke top-level Maven targets” and then provide goals.
+ 
+•	Next, In the same Build steps configuration, you will find a new build step called “Invoke Dependency-Check”.
+ 
+•	You can configure it with the following settings:
+o	Dependency-Check Installation: If you’ve configured a specific Dependency-Check installation in the global tool configuration, select it here. Otherwise, you can leave it as “Default.”
+o	Additional Arguments: You can specify any additional arguments you want to pass to Dependency-Check. For example, to specify the output format or thresholds. 
+ 
+•	Click on Save to save your Jenkins job configuration
+Create Github Webhook to trigger the Jenkins Job:
+You need to create a webhook in your github project to configure in such a way to ensure Jenkins job is triggered when there is a commit/merge request in your project.
+•	Go to Settings of the project and click on Webhooks
+•	Click on Add Webhook
+•	Provide Payload URL, which is your Jenkins URL.
+ 
+•	Click on Update Webhook
+Note: Since the Jenkins is running on localhost, I have used ngrok to create a Ephemeral domain, which I used in Webhook configuration.
+Triggering Job and Viewing OWASP Dependency-Check Results in Jenkins:
+•	Once you commit/merge the code in code repository, a new Jenkins job will be created as per the configuration.
+•	Once the job is complete, you can view the Dependency-Check results in the generated Dependency-Check report.
+•	The report will include information about the identified vulnerabilities in your project’s dependencies.
+•	If you want to see dependency-check-report.html then go to workspace.
+ 
+•	Click on dependency-check-report.html to view the report.
+Conclusion:
+Integrating OWASP Dependency-Check with Jenkins enables you to routinely examine your project's dependencies for known security vulnerabilities, allowing you to detect and resolve potential risks early in the development cycle.
